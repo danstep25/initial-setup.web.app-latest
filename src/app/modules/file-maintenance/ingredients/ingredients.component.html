@@ -1,0 +1,33 @@
+<!-- Main Supplier Container -->
+<div
+  aria-label="Supplier Page Container"
+  class="mt-[20px] flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent sm:absolute sm:inset-0 sm:overflow-hidden"
+>
+  <div
+    attr.aria-label="{{ labels.title }} Page Header"
+    class="bg-gray-600 relative flex flex-col px-6 pt-1 border-b flex-0 sm:flex-row sm:items-center sm:justify-between md:px-8"
+  >
+    <div class="flex flex-col w-full gap-1">
+      <div
+        attr.aria-label="{{ labels.title }} Page Breadcrumb Container"
+        class="flex items-center font-medium normal-case text-secondary"
+      ></div>
+      <div
+        class="relative flex flex-col flex-wrap gap-2 py-4 flex-0 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div
+          attr.aria-label="{{ labels.title }} Page Title"
+          class="text-5xl font-extrabold tracking-tight"
+        >
+          <span class="text-white">{{ labels.title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Main -->
+  <div class="main-container">
+    <div class="flex flex-auto overflow-hidden bg-slate-100">
+      <app-ingredients-list class="view-list"></app-ingredients-list>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,510 @@
+<!-- Main -->
+<div
+  aria-label="Reservation Form Page Container"
+  class="flex flex-col mt-[20px] flex-auto min-w-0 bg-card dark:bg-transparent sm:absolute sm:inset-0 sm:overflow-hidden"
+>
+  <!-- Header -->
+  <div
+    attr.aria-label="{{ labels.title }} Page Header"
+    class="relative flex flex-col px-6 pt-1 bg-gray-600 border-b flex-0 sm:flex-row sm:items-center sm:justify-between md:px-8"
+  >
+    <div class="flex flex-col w-full gap-1">
+      <div
+        attr.aria-label="{{ labels.title }} Page Breadcrumb Container"
+        class="flex items-center font-medium text-secondary"
+      ></div>
+      <div
+        class="relative flex flex-col flex-wrap gap-2 py-4 flex-0 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div
+          attr.aria-label="{{ labels.title }} Page Title"
+          class="text-4xl font-extrabold tracking-tight"
+        >
+          <span class="text-white"
+            >{{
+              this.defaultFormType == this.actionType.add
+                ? actionType.add
+                : actionType.edit
+            }}
+            {{ labels.title }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container bg-slate-100 sm:p-8">
+    <div class="relative w-full bg-white rounded-lg shadow-lg md:pb-15">
+      <form [formGroup]="formGroup" class="p-6 h-full overflow-y-auto">
+        <!-- Client Information Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            Client Information
+          </h3>
+          <div class="grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.fullName }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'fullName'"
+                  [placeholder]="labels.headers.fullName"
+                />
+                @if(hasError('fullName')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.contactNo }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'contactNo'"
+                  [placeholder]="labels.headers.contactNo"
+                />
+                @if(hasError('contactNo')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4 sm:col-span-2 lg:col-span-1">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.address }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'address'"
+                  [placeholder]="labels.headers.address"
+                />
+                @if(hasError('address')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Details Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            Event Details
+          </h3>
+          <div class="grid w-full gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.event }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <mat-select formControlName="eventId">
+                  @for(option of (eventList$ | async)?.data; track option){
+                  <mat-option [value]="option.id">{{
+                    option.value
+                  }}</mat-option>
+                  }
+                </mat-select>
+                @if(hasError('eventId')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.noOfGuest }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  type="number"
+                  [formControlName]="'noOfGuest'"
+                  [placeholder]="labels.headers.noOfGuest"
+                />
+                @if(hasError('noOfGuest')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.venue }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <mat-select
+                  formControlName="venueId"
+                  (selectionChange)="autoCompute()"
+                >
+                  @for(option of (venueList$ | async)?.data; track option){
+                  <mat-option [value]="option.id">{{
+                    option.value
+                  }}</mat-option>
+                  }
+                </mat-select>
+                @if(hasError('venueId')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Time Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            Date & Time
+          </h3>
+          <div class="grid w-full gap-4 grid-cols-1 sm:grid-cols-2">
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.dateFrom }}
+              </label>
+              <div class="grid grid-cols-2 gap-3">
+                <mat-form-field class="w-full" appearance="outline">
+                  <input
+                    matInput
+                    formControlName="dateFrom"
+                    [matDatepicker]="dateFrom"
+                    [min]="dateNow"
+                    (dateInput)="onDateInput('dateFrom')"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="dateFrom"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dateFrom></mat-datepicker>
+                  @if(hasError('dateFrom')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                  <input
+                    matInput
+                    formControlName="timeFrom"
+                    [matTimepicker]="timeFrom"
+                    placeholder="Time"
+                  />
+                  <mat-timepicker-toggle
+                    matIconSuffix
+                    [for]="timeFrom"
+                  ></mat-timepicker-toggle>
+                  <mat-timepicker #timeFrom></mat-timepicker>
+                  @if(hasError('timeFrom')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.dateTo }}
+              </label>
+              <div class="grid grid-cols-2 gap-3">
+                <mat-form-field class="w-full" appearance="outline">
+                  <input
+                    matInput
+                    formControlName="dateTo"
+                    [matDatepicker]="dateTo"
+                    [min]="formGroup.get('dateFrom')?.value || dateNow"
+                    (dateInput)="onDateInput('dateTo')"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="dateTo"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #dateTo></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                  <input
+                    matInput
+                    [matTimepicker]="timeTo"
+                    formControlName="timeTo"
+                    placeholder="Time"
+                  />
+                  <mat-timepicker-toggle matIconSuffix [for]="timeTo" />
+                  <mat-timepicker #timeTo />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Options Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+            Additional Options
+          </h3>
+          <div class="grid w-full gap-4 grid-cols-1 sm:grid-cols-2">
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-2">
+                <mat-checkbox
+                  *ngIf="hasPermission()"
+                  formControlName="isDiscount"
+                  (change)="isDiscount()"
+                ></mat-checkbox>
+                <label class="text-sm font-medium text-gray-700">
+                  {{ labels.headers.discount }}
+                </label>
+              </div>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'discount'"
+                  [placeholder]="labels.headers.discount"
+                />
+                @if(hasError('discount')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.remarks }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'remarks'"
+                  [placeholder]="labels.headers.remarks"
+                />
+                @if(hasError('remarks')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Food Packages Section -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Food Packages
+            </h3>
+            <button
+              mat-flat-button
+              [color]="'primary'"
+              type="button"
+              class="flex items-center gap-2"
+              (click)="addFoodPackage()"
+            >
+              <mat-icon>add</mat-icon>
+              <span>Add Package</span>
+            </button>
+          </div>
+
+          <div
+            formArrayName="reservationPackage"
+            class="space-y-4"
+          >
+            @if(ReservationPackages.controls.length === 0) {
+              <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <mat-icon class="text-4xl mb-2 text-gray-400">restaurant_menu</mat-icon>
+                <p>No food packages added yet. Click "Add Package" to get started.</p>
+              </div>
+            }
+            
+            <div
+              *ngFor="
+                let reservation of ReservationPackages.controls;
+                let i = index
+              "
+              [formGroupName]="i"
+              class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+            >
+              <div class="flex-1">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.reservationPackage }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <mat-select
+                    formControlName="packageId"
+                    (selectionChange)="autoCompute()"
+                  >
+                    @for(option of (foodPackageList$ | async)?.data; track option){
+                    <mat-option [value]="option.id">{{
+                      option.value
+                    }}</mat-option>
+                    }
+                  </mat-select>
+                  @if(hasError('packageId')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="mt-6 text-red-500 hover:bg-red-50"
+                (click)="removeFoodPackage(i)"
+                [attr.aria-label]="'Remove package'"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Services
+            </h3>
+              <button
+                mat-flat-button
+                [color]="'primary'"
+                type="button"
+                class="flex items-center gap-2"
+                (click)="addServicePackage()"
+              >
+              <mat-icon>add</mat-icon>
+              <span>Add Service</span>
+            </button>
+          </div>
+
+          <div
+            formArrayName="servicePackage"
+            class="space-y-4"
+          >
+            @if(ServicePackages.controls.length === 0) {
+              <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <mat-icon class="text-4xl mb-2 text-gray-400">room_service</mat-icon>
+                <p>No services added yet. Click "Add Service" to get started.</p>
+              </div>
+            }
+            
+            <div
+              *ngFor="
+                let service of ServicePackages.controls;
+                let i = index
+              "
+              [formGroupName]="i"
+              class="grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+            >
+              <div class="sm:col-span-5">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.service }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <mat-select
+                    formControlName="serviceId"
+                    (selectionChange)="onServiceChange(i)"
+                  >
+                    @for(option of (serviceList$ | async)?.data; track option){
+                    <mat-option [value]="option.id">{{
+                      option.value
+                    }}</mat-option>
+                    }
+                  </mat-select>
+                  @if(hasError('serviceId')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.price }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="price"
+                    placeholder="0.00"
+                    [disabled]="true"
+                    min="0"
+                    step="0.01"
+                  />
+                  @if(hasError('price')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.quantity }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="quantity"
+                    placeholder="1"
+                    (input)="autoCompute()"
+                    min="1"
+                  />
+                  @if(hasError('quantity')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-1 flex mt-[23px]">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="text-red-500 hover:bg-red-50"
+                  (click)="removeServicePackage(i)"
+                  [attr.aria-label]="'Remove service'"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="mt-8 bg-white border-t-2 border-gray-200 shadow-lg -mx-6 -mb-6">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
+            <div class="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 rounded-lg">
+              <mat-icon class="text-green-700">receipt</mat-icon>
+              <span class="text-lg font-semibold text-gray-700">Total Price:</span>
+              <span class="text-2xl font-bold text-green-700">
+                ₱{{ totalPrice() | number:'1.2-2' }}
+              </span>
+            </div>
+            <button
+              type="submit"
+              mat-flat-button
+              [color]="'primary'"
+              class="px-8 py-2"
+              (click)="
+                formatDate();
+                submit(
+                  module.reservation,
+                  defaultFormType === actionType.add
+                    ? requestMethod.post
+                    : requestMethod.put
+                )
+              "
+            >
+              <mat-icon class="mr-2">{{ defaultFormType === actionType.add ? 'save' : 'update' }}</mat-icon>
+              {{
+                defaultFormType === actionType.add ? labels.save : labels.update
+              }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

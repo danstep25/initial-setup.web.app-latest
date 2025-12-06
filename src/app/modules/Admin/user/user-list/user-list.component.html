@@ -1,0 +1,251 @@
+<!-- User List -->
+@if (userList$ | async; as userList) {
+<form [formGroup]="userFormGroup">
+  <div
+    attr.data-cy="{{ labels.title }}-list-page-container"
+    class="table-wrapper"
+  >
+    <div
+      style="display: flex; justify-content: flex-end"
+      class="absolute top-12 right-2 gap-2"
+    >
+      <a
+        mat-flat-button
+        class="flex items-center gap-2 pl-4 pr-5 bg-rose-300"
+				[routerLink]="['new']"
+      >
+        <mat-icon
+          class="icon-size-5"
+        >add</mat-icon>
+        <span class="hidden sm:block">{{ labels.new }}</span>
+      </a>
+
+      <a
+        mat-flat-button
+        class="flex items-center gap-2 pl-4 pr-5 bg-rose-300"
+        (click)="generate()"
+      >
+        <span class="hidden sm:block">{{ labels.generate }}</span>
+      </a>
+    </div>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>filter_alt</mat-icon>
+          <mat-icon>sort</mat-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid gap-2 user-list-grid">
+        <div
+          attr.data-cy="{{ labels.title }}-list-table-header-{{
+            labels.headers.search
+          }}"
+          class="table-header-item"
+        >
+          <mat-form-field class="flex flex-row w-full" appearance="outline">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              class="ms-2"
+              matInput
+              [placeholder]="labels.placeholder.search"
+              formControlName="searchValue"
+            />
+          </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-3">
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="searchFilter(userFormGroup)"
+          >
+            <mat-icon class="icon-size-5">search</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.search }}</span>
+          </button>
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="resetFilter()"
+          >
+            <mat-icon class="icon-size-5">rotate_left</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.reset }}</span>
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <!-- Header -->
+    <div
+      attr.data-cy="{{ labels.title }}-list-header"
+      class="user-list-grid table-header"
+    >
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.username
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.username | titlecase }}
+      </div>
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.password
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.password | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.role
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.role | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.fullname
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.fullname | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.createdAt
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.createdAt | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.updatedAt
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.updatedAt | titlecase }}
+      </div>
+      
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.action
+        }}"
+        class="table-header-item"
+      >
+        <div class="min-w-32">{{ labels.headers.action }}</div>
+      </div>
+      <!-- Rows -->
+      @if (userList.data.length > 0) { 
+        @for (row of userList.data; track $index)
+      {
+      <!-- Username -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.username
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.username ?? labels.notApplicable }}
+      </div>
+      <!-- Password -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.password
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.password ?? labels.notApplicable }}
+      </div>
+
+      <!-- Role -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.role
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.role ?? labels.notApplicable }}
+      </div>
+
+      <!-- Name -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.username
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ (row?.lastname + ', ' + row.firstname + ' ' + (row?.middlename ?? '')) }}
+      </div>
+
+      <!-- Created At -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.username
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ (row?.createdAt | date:dateFormat.dateOnly) ?? labels.notApplicable }}
+      </div>
+
+      <!-- Updated At -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.username
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ (row?.updatedAt | date:dateFormat.dateOnly) ?? labels.notApplicable }}
+      </div>
+
+      <!-- Actions -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.action
+        }}"
+      >
+        <div class="flex gap-2 my-3 ms-5">
+          <a [matTooltip]="labels.actions.edit" matTooltipPosition="above" [routerLink]="[row.userId,'edit']">
+            <mat-icon class="text-black hover:text-green-300">edit</mat-icon>
+          </a>
+          <button
+            [matTooltip]="labels.actions.delete"
+            matTooltipPosition="above"
+          >
+            <mat-icon class="text-black hover:text-red-500" (click)="openDeleteConfirmation({userId: row?.userId}, getDataName(row), row?.username)">delete</mat-icon>
+          </button>
+
+          <button
+            [matTooltip]="setDeactivated(row?.isDeactivated).tooltip"
+            matTooltipPosition="above"
+          >
+            <mat-icon 
+              [ngClass]="setDeactivated(row?.isDeactivated).class" 
+              (click)="deactivate({userId: row?.userId})">{{setDeactivated(row?.isDeactivated).icon}}</mat-icon>
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <!-- Template when list is null -->
+      <cps-no-data
+        moduleName="User List"
+        class="row-span-3 col-span-full"
+      ></cps-no-data>
+      }
+    </div>
+    <app-paginator
+      aria-label="Amla Code List paginator"
+      class="paginator"
+      [records]="paginate.totalRecords"
+      [entries]="paginate.totalEntries"
+      [pageIndex]="paginate.pageIndex"
+      [pageSize]="paginate.pageSize"
+      (page)="handlePageEvent($event)"
+    >
+    </app-paginator>
+  </div>
+</form>
+}

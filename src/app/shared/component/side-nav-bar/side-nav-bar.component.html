@@ -1,0 +1,63 @@
+<div class="side-nav-container">
+  <!-- User Profile Section -->
+  <div class="user-profile-section">
+    <div class="profile-avatar">
+      <div class="profile-image"></div>
+    </div>
+    <p class="username">{{ getUsername() }}</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Navigation Menu -->
+  <nav class="navigation-menu">
+    <ul class="nav-list">
+      <li *ngFor="let list of NavigationList" class="nav-item">
+        <div 
+          *ngIf="(list.module === 'Users' || list.module === 'Audits') ? hasPermission() : true"
+          class="nav-link"
+          [class.active]="(activeModule | async) === list.module"
+          [class.has-submenu]="list?.subModules"
+          (click)="navigate(list)">
+          <mat-icon class="nav-icon">{{ list?.icon }}</mat-icon>
+          <span class="nav-text">{{ list.module }}</span>
+          <mat-icon 
+            *ngIf="list?.subModules" 
+            class="expand-icon"
+            [class.expanded]="(activeModule | async) === list.module">
+            expand_more
+          </mat-icon>
+        </div>
+
+        <!-- Submenu -->
+        <div
+          *ngIf="(activeModule | async) === list.module && list?.subModules"
+          class="submenu">
+          <ul class="submenu-list">
+            <li 
+              *ngFor="let subModule of list?.subModules"
+              class="submenu-item">
+              <div 
+                class="submenu-link"
+                [class.active]="(activeSubModule | async) === subModule.module"
+                (click)="navigate(subModule, list.module)">
+                <mat-icon class="submenu-icon">{{ subModule?.icon }}</mat-icon>
+                <span class="submenu-text">{{ subModule.module }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Logout Section -->
+  <div class="logout-section">
+    <div 
+      class="logout-button"
+      (click)="logout()">
+      <mat-icon class="logout-icon">logout</mat-icon>
+      <span class="logout-text">{{ labels.logout }}</span>
+    </div>
+  </div>
+</div>

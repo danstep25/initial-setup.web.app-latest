@@ -1,0 +1,21 @@
+<mat-sidenav-container>
+  <mat-sidenav
+    mode="side"
+    [opened]="isLoggedIn$ | async"
+    class="bg-rose-500 min-w-[200px] max-w-[200px]"
+  >
+    <app-side-nav-bar />
+  </mat-sidenav>
+  <mat-sidenav-content class="h-screen">
+    <app-nav-header />
+    <router-outlet>
+      <button
+        matMiniFab
+        class="z-30 fixed bg-rose-300 -left-[10px] rounded-none rounded-r top-[50%]"
+      >
+        <mat-icon class="text-white"> chevron_right </mat-icon>
+      </button>
+    </router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<app-toast-component />

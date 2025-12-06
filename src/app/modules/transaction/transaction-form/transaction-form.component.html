@@ -1,0 +1,207 @@
+<div class="payment-dialog">
+  <h2 mat-dialog-title class="text-2xl font-bold text-gray-800 pb-2 border-b border-gray-200">
+    {{ data?.isRefund ? 'Refund' : 'Payment' }} - {{ data.fullName }}
+  </h2>
+
+  <mat-dialog-content class="min-w-[500px]">
+    <form [formGroup]="formGroup" class="flex flex-col gap-6 py-4">
+      <!-- Reservation Details -->
+      <div class="bg-gradient-to-r from-gray-50 to-slate-50 p-5 rounded-lg border-2 border-gray-200 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Reservation Details</h3>
+        <div class="flex flex-col gap-3">
+          <!-- Food Package -->
+          @if(foodPackages.length > 0) {
+            <div class="flex flex-col gap-2">
+              <span class="font-semibold text-gray-700">{{ labels.headers.reservationPackage }}:</span>
+              @for(pkg of foodPackages; track $index) {
+                <div class="flex justify-between items-center pl-4">
+                  <span class="text-gray-600">{{ pkg.name }}</span>
+                  <span class="font-medium text-gray-800">₱{{ pkg.price | number:'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Service -->
+          @if(servicePackages.length > 0) {
+            <div class="flex flex-col gap-2 pt-2 border-t border-gray-200">
+              <span class="font-semibold text-gray-700">{{ labels.headers.service }}:</span>
+              @for(service of servicePackages; track $index) {
+                <div class="flex justify-between items-center pl-4">
+                  <span class="text-gray-600">
+                    {{ service.name }}
+                    @if(service.quantity > 1) {
+                      <span class="text-sm text-gray-500">(x{{ service.quantity }})</span>
+                    }
+                  </span>
+                  <span class="font-medium text-gray-800">
+                    ₱{{ (service.price * service.quantity) | number:'1.2-2' }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Venue -->
+          @if(venueName) {
+            <div class="flex flex-col gap-2 pt-2 border-t border-gray-200">
+              <span class="font-semibold text-gray-700">{{ labels.headers.venue }}:</span>
+              <div class="flex justify-between items-center pl-4">
+                <span class="text-gray-600">{{ venueName }}</span>
+                <span class="font-medium text-gray-800">₱{{ venuePrice | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- Discount -->
+          @if(data?.isDiscount || data?.discount) {
+            <div class="flex flex-col gap-2 pt-2 border-t border-gray-200">
+              <span class="font-semibold text-gray-700">{{ labels.headers.discount }}:</span>
+              <div class="flex justify-between items-center pl-4">
+                <span class="text-gray-600">
+                  @if(data.isDiscount && data.discount) {
+                    {{ data.discount }}{{ data.discount.toString().includes('%') ? '' : '%' }}
+                  } @else {
+                    {{ data.discount || 'N/A' }}
+                  }
+                </span>
+                @if(data.discountAmount) {
+                  <span class="font-medium text-red-600">-₱{{ data.discountAmount | number:'1.2-2' }}</span>
+                } @else {
+                  <span class="font-medium text-gray-800">-</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Payment/Refund Information Summary -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-lg border-2 border-blue-200 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ data?.isRefund ? 'Refund Summary' : 'Payment Summary' }}</h3>
+        <div class="flex flex-col gap-3">
+          @if(data?.isRefund) {
+            <!-- Refund Information -->
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-gray-700">Reservation Fee:</span>
+              <span class="font-bold text-lg text-gray-900">₱{{ (data?.totalPrice * 0.1) | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200">
+              <span class="font-semibold text-gray-700">Refund Amount:</span>
+              <span class="font-bold text-xl text-green-600">₱{{ (data?.refundAmount || 0) | number:'1.2-2' }}</span>
+            </div>
+            @if(data?.refundAmount && data?.totalPrice) {
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Refund Percentage:</span>
+                <span class="text-sm font-medium text-gray-700">
+                  {{ ((data.refundAmount / (data.totalPrice * 0.1)) * 100) | number:'1.0-1' }}% of Reservation Fee
+                </span>
+              </div>
+            }
+          } @else {
+            <!-- Payment Information -->
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-gray-700">Total Price:</span>
+              <span class="font-bold text-lg text-gray-900">₱{{ data?.totalPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-gray-700">Total Paid:</span>
+              <span class="font-bold text-lg text-blue-600">₱{{ totalPaid | number:'1.2-2' }} ({{ totalPaidPercentage | number:'1.0-1' }}%)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-gray-700">Balance:</span>
+              <span class="font-bold text-lg text-orange-600">₱{{ (data.balance == 0 ? data.totalPrice : data.balance) | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200">
+              <span class="font-semibold text-gray-700">Amount Due:</span>
+              <span class="font-bold text-xl text-green-600">₱{{ currentPayment | number:'1.2-2' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Payment Method (hidden for refunds) -->
+      @if(!data?.isRefund) {
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-semibold text-gray-800">Payment Method</h3>
+          <mat-radio-group 
+            formControlName="paymentMethod" 
+            aria-label="Select payment method"
+            class="flex flex-col gap-3">
+            <mat-radio-button 
+              *ngFor="let option of paymentMethod" 
+              [value]="option"
+              class="py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <!-- Payment Option (hidden for refunds) -->
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-semibold text-gray-800">Payment Option</h3>
+          <mat-radio-group 
+            formControlName="paymentOption" 
+            aria-label="Select payment option"
+            class="flex flex-col gap-3">
+            <mat-radio-button 
+              *ngFor="let option of paymentOption" 
+              [value]="option"
+              class="py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <!-- Reference Number (conditional, hidden for refunds) -->
+        <div *ngIf="PaymentMethod !== 'Cash'" class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-gray-700">{{ labels.headers.refNo }}</label>
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              matInput
+              formControlName="refNo"
+              [placeholder]="labels.headers.refNo"
+            />
+            @if(hasError('refNo')){
+              <mat-error>Reference number is required.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      }
+
+      <!-- Amount -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">{{ data?.isRefund ? 'Refund Amount' : labels.headers.amount }}</label>
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            matInput
+            type="text"
+            (keypress)="onlyAllowDecimal($event)"
+            (paste)="onPasteDecimal($event)"
+            formControlName="amount"
+            [placeholder]="data?.isRefund ? 'Refund Amount' : labels.headers.amount"
+            [readonly]="data?.isRefund"
+            [class.bg-gray-100]="data?.isRefund"
+          />
+          @if(hasError('amount')){
+            <mat-error>Amount is required.</mat-error>
+          }
+          @if(maxValueError('amount')){
+            <mat-error>{{ data?.isRefund ? 'Refund amount cannot exceed the maximum refund amount.' : 'Amount entered is more than the balance.' }}</mat-error>
+          }
+        </mat-form-field>
+        @if(data?.isRefund) {
+          <p class="text-sm text-gray-600 mt-1">This amount is calculated based on the cancellation policy.</p>
+        }
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="px-6 pb-4 pt-4 border-t border-gray-200 bg-gray-50">
+    <button mat-button (click)="close()" class="px-4">Cancel</button>
+    <button mat-raised-button [color]="data?.isRefund ? 'warn' : 'primary'" (click)="submit()" class="px-6">
+      <mat-icon class="mr-2">{{ data?.isRefund ? 'undo' : 'payment' }}</mat-icon>
+      {{ data?.isRefund ? 'Process Refund' : 'Submit Payment' }}
+    </button>
+  </mat-dialog-actions>
+</div>

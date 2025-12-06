@@ -1,0 +1,141 @@
+<div class="Main Reservation Component h-full w-full">
+  <div class="Reservation Grid grid grid-cols-6 h-full">
+    <div class="Reservation Current Events border p-2">
+      <h2 class="">Current Events</h2>
+
+      <!-- START RESERVATION LIST -->
+      @for(event of (currentEventList$ | async)?.data; track event){
+      <div class="Reservation Current Event List p-3 grid grid-cols-4 h-auto">
+        <div
+          class="border-l border-t border-b rounded-tl rounded-bl border-red-200 w-full flex justify-center items-center"
+        >
+          <mat-icon class="text-red-500 text-[40px] h-auto w-auto"
+            >bookmark_add</mat-icon
+          >
+        </div>
+        <div
+          class="px-3 border border-red-200 col-span-3 flex flex-col rounded-tr rounded-br text-[12px]"
+        >
+          <span>Description: {{ event.description }}</span>
+          <span>Client: {{ event.fullName }}</span>
+          <span>Time And Date: {{ event.dateFrom }}</span>
+        </div>
+      </div>
+      }
+      <!-- END -->
+    </div>
+    <div
+      [formGroup]="calendarForm"
+      class="Reservation Calendar col-span-4 border flex flex-col"
+    >
+      <div class="Month Header w-full border text-center text-[30px]">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-select class="text-center text-[30px]" formControlName="year">
+            @for(year of years; track year){
+            <mat-option [value]="year">{{ year }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="Month Header w-full border text-center text-[30px]">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-select class="text-center text-[30px]" formControlName="month">
+            @for(mon of month; track mon){
+            <mat-option [value]="mon">{{ mon }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="Calendar Days Of Week grid grid-cols-7 w-full">
+        <span class="border">Sun</span>
+        <span class="border">Mon</span>
+        <span class="border">Tue</span>
+        <span class="border">Wed</span>
+        <span class="border">Thu</span>
+        <span class="border">Fri</span>
+        <span class="border">Sat</span>
+      </div>
+
+      <div class="Calendar Days Of Month grid grid-cols-7 w-full">
+        <!-- DAYS OF MONTH -->
+        @for(day of (daysOfMonth$ | async); track day){ @if(day.date === 1){
+        @for(emptySpace of getStartDayOfWeek(day.daysOfWeek); track $index){
+        <span class="border h-[100px]"></span>
+        } }
+        <span
+          class="border h-[100px] text-right px-1 py-1 relative flex flex-col cursor-pointer hover:bg-gray-50"
+          (click)="getEvents(day)"
+        >
+          <span class="flex-1">{{ day.date }}</span>
+          @if(getReservationCount(day) > 0){
+          <div class="absolute bottom-1 right-1 flex items-center justify-center bg-red-500 text-white rounded-full min-w-[20px] h-5 px-1 text-[10px] font-bold shadow-sm">
+            {{ getReservationCount(day) }}
+          </div>
+          }
+        </span>
+        }
+      </div>
+    </div>
+    <div class="Reservation Upcoming Event border">
+      <div class="Upcoming Events h-[45%] border p-2">
+        <h2 class="">Upcoming Events</h2>
+        <!-- START RESERVATION LIST -->
+        @for(event of (upcomingEventList$ | async)?.data; track event){
+        <div class="Reservation Current Event List p-3 grid grid-cols-4 h-auto">
+          <div
+            class="border-l border-t border-b rounded-tl rounded-bl border-red-200 w-full flex justify-center items-center"
+          >
+            <mat-icon class="text-red-500 text-[40px] h-auto w-auto"
+              >bookmark_add</mat-icon
+            >
+          </div>
+          <div
+            class="px-3 border border-red-200 col-span-3 flex flex-col rounded-tr rounded-br text-[12px]"
+          >
+            <span>Description: {{ event.description }}</span>
+            <span>Client: {{ event.fullName }}</span>
+            <span>Time And Date: {{ event.dateFrom }}</span>
+          </div>
+        </div>
+        }
+        <!-- END -->
+      </div>
+
+      <div class="Events p-2 border h-[45%] overflow-y-auto">
+        <h2 class="">Events</h2>
+        <!-- START RESERVATION LIST -->
+        @for(event of (reservationsList$ | async)?.data; track event){
+
+        <div class="Reservation Current Event List p-3 grid grid-cols-4 h-auto">
+          <div
+            class="border-l border-t border-b rounded-tl rounded-bl border-red-200 w-full flex justify-center items-center"
+          >
+            <mat-icon class="text-red-500 text-[40px] h-auto w-auto"
+              >bookmark_add</mat-icon
+            >
+          </div>
+          <div
+            class="px-3 border border-red-200 col-span-3 flex flex-col rounded-tr rounded-br text-[12px]"
+          >
+            <span>Description: {{ event.description }}</span>
+            <span>Client: {{ event.fullName }}</span>
+            <span>Time And Date: {{ event.dateFrom }}</span>
+          </div>
+        </div>
+        }
+
+        <!-- END -->
+      </div>
+      <div class="button relative top-5">
+        <a
+          mat-flat-button
+          class="flex items-center gap-2 pl-4 pr-5 mx-2 bg-rose-300 relative bottom-0"
+          (click)="navigateReservationViewList()"
+        >
+          <mat-icon class="icon-size-5">visibility</mat-icon>
+          <span class="hidden sm:block">View Reservations</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

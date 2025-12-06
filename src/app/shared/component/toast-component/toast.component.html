@@ -1,0 +1,35 @@
+@if(toast$ | async; as toast){
+<div
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  class="toast-container fixed z-[9999] top-4 right-4 min-w-[320px] max-w-[420px] transition-all duration-300 ease-in-out animate-slide-in"
+  [ngClass]="{
+    'toast-success': toast.title === 'success',
+    'toast-error': toast.title === 'error',
+    'toast-warning': toast.title === 'warning'
+  }"
+>
+  <div class="toast-content relative flex items-start gap-4 p-4 rounded-xl shadow-2xl backdrop-blur-sm border overflow-hidden">
+    <!-- Icon Container -->
+    <div class="toast-icon-container flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full" aria-hidden="true">
+      <mat-icon class="text-xl">{{ toast.icon }}</mat-icon>
+    </div>
+    
+    <!-- Content -->
+    <div class="toast-text flex-1 flex flex-col gap-1 min-w-0">
+      <div class="toast-title text-base font-bold capitalize tracking-tight">
+        {{ toast.title }}
+      </div>
+      @if(toast.subtitle) {
+        <div class="toast-subtitle text-sm leading-relaxed">
+          {{ toast.subtitle }}
+        </div>
+      }
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="toast-progress absolute bottom-0 left-0 h-1 bg-current opacity-30 animate-progress" aria-hidden="true"></div>
+  </div>
+</div>
+}

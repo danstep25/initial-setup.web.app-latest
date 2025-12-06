@@ -1,0 +1,182 @@
+<!-- Main Dashboard Container -->
+<div
+  aria-label="Dashboard Page Container"
+  class="dashboard-container"
+>
+  <div
+  attr.aria-label="{{ labels.title }} Page Header"
+  class="bg-gray-600 relative flex flex-col px-6 pt-6 border-b flex-0 sm:flex-row sm:items-center sm:justify-between md:px-8"
+  >
+    <div class="flex flex-col w-full gap-1">
+      <div
+        attr.aria-label="{{ labels.title }} Page Breadcrumb Container"
+        class="flex items-center font-medium normal-case text-secondary"
+      ></div>
+      <div
+        class="relative flex flex-col flex-wrap gap-2 py-4 flex-0 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div
+          attr.aria-label="{{ labels.title }} Page Title"
+          class="text-5xl font-extrabold tracking-tight"
+        >
+          <span class="text-white">{{ labels.title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Statistics Cards -->
+    @if (dashboardStats$ | async; as stats) {
+      <div class="stats-grid">
+        <!-- Total Reservations Card -->
+        <div class="stat-card">
+          <div class="stat-icon reservation-icon">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.totalReservations }}</div>
+            <div class="stat-value">{{ stats.totalReservations }}</div>
+          </div>
+        </div>
+
+        <!-- Total Transactions Card -->
+        <div class="stat-card">
+          <div class="stat-icon transaction-icon">
+            <mat-icon>credit_card</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.totalTransactions }}</div>
+            <div class="stat-value">{{ stats.totalTransactions }}</div>
+          </div>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="stat-card">
+          <div class="stat-icon revenue-icon">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.totalRevenue }}</div>
+            <div class="stat-value">₱{{ stats.totalRevenue | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <!-- Pending Payments Card -->
+        <div class="stat-card">
+          <div class="stat-icon pending-icon">
+            <mat-icon>pending</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.pendingPayments }}</div>
+            <div class="stat-value">₱{{ stats.pendingPayments | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <!-- Upcoming Reservations Card -->
+        <div class="stat-card">
+          <div class="stat-icon upcoming-icon">
+            <mat-icon>event_upcoming</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.upcomingReservations }}</div>
+            <div class="stat-value">{{ stats.upcomingReservations }}</div>
+          </div>
+        </div>
+
+        <!-- Completed Reservations Card -->
+        <div class="stat-card">
+          <div class="stat-icon completed-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">{{ labels.stats.completedReservations }}</div>
+            <div class="stat-value">{{ stats.completedReservations }}</div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Recent Data Section -->
+    <div class="recent-data-grid">
+      <!-- Recent Transactions -->
+      <div class="recent-card">
+        <div class="recent-card-header">
+          <mat-icon>credit_card</mat-icon>
+          <h3>{{ labels.recent.transactions }}</h3>
+        </div>
+        <div class="recent-card-content">
+          @if (recentTransactions$ | async; as transactions) {
+            @if (transactions.length > 0) {
+              <div class="recent-list">
+                @for (transaction of transactions; track transaction.reservationId) {
+                  <div class="recent-item">
+                    <div class="recent-item-info">
+                      <div class="recent-item-title">{{ transaction.fullName }}</div>
+                      <div class="recent-item-subtitle">
+                        {{ transaction.createdAt | date:'short' }}
+                      </div>
+                    </div>
+                    <div class="recent-item-value">
+                      ₱{{ ((transaction.totalPrice || 0) - (transaction.balance || 0)) | number:'1.2-2' }}
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon>inbox</mat-icon>
+                <p>No recent transactions</p>
+              </div>
+            }
+          } @else {
+            <div class="loading-state">
+              <mat-icon>hourglass_empty</mat-icon>
+              <p>Loading...</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Reservations -->
+      <div class="recent-card">
+        <div class="recent-card-header">
+          <mat-icon>calendar_month</mat-icon>
+          <h3>{{ labels.recent.reservations }}</h3>
+        </div>
+        <div class="recent-card-content">
+          @if (recentReservations$ | async; as reservations) {
+            @if (reservations.length > 0) {
+              <div class="recent-list">
+                @for (reservation of reservations; track reservation.reservationId) {
+                  <div class="recent-item">
+                    <div class="recent-item-info">
+                      <div class="recent-item-title">{{ reservation.fullName }}</div>
+                      <div class="recent-item-subtitle">
+                        {{ reservation.dateFrom | date:'short' }} - {{ reservation.dateTo | date:'short' }}
+                      </div>
+                    </div>
+                    <div class="recent-item-value">
+                      {{ reservation.noOfGuest }} guests
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon>inbox</mat-icon>
+                <p>No recent reservations</p>
+              </div>
+            }
+          } @else {
+            <div class="loading-state">
+              <mat-icon>hourglass_empty</mat-icon>
+              <p>Loading...</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

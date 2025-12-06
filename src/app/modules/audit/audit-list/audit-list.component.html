@@ -1,0 +1,188 @@
+<!-- Audit List -->
+@if (auditList$ | async; as auditList) {
+<form [formGroup]="auditFormGroup">
+  <div
+    attr.data-cy="{{ labels.title }}-list-page-container"
+    class="table-wrapper"
+  >
+    <div
+      style="display: flex; justify-content: flex-end"
+      class="absolute top-12 right-2 gap-2"
+    >
+      <a
+        mat-flat-button
+        class="flex items-center gap-2 pl-4 pr-5 bg-rose-300"
+        (click)="generate()"
+      >
+        <span class="hidden sm:block">{{ labels.generate }}</span>
+      </a>
+    </div>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>filter_alt</mat-icon>
+          <mat-icon>sort</mat-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid gap-2 audit-list-grid">
+        <div
+          attr.data-cy="{{ labels.title }}-list-table-header-{{
+            labels.headers.search
+          }}"
+          class="table-header-item"
+        >
+          <mat-form-field class="flex flex-row w-full" appearance="outline">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              class="ms-2"
+              matInput
+              [placeholder]="labels.placeholder.search"
+              formControlName="searchValue"
+            />
+          </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-3">
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="searchFilter(auditFormGroup)"
+          >
+            <mat-icon class="icon-size-5">search</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.search }}</span>
+          </button>
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="resetFilter()"
+          >
+            <mat-icon class="icon-size-5">rotate_left</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.reset }}</span>
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <!-- Header -->
+    <div
+      attr.data-cy="{{ labels.title }}-list-header"
+      class="audit-list-grid table-header"
+    >
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.username
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.username | titlecase }}
+      </div>
+      
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.action
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.action | titlecase }}
+      </div>
+      
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.module
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.module | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.description
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.description | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.createdAt
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.createdAt | titlecase }}
+      </div>
+
+      <!-- Rows -->
+      @if (auditList.data.length > 0) { @for (row of
+      auditList.data; track $index) {
+      <!-- User Name -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.username
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.username ?? labels.notApplicable }}
+      </div>
+      
+      <!-- action -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.action
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.action ?? labels.notApplicable }}
+      </div>
+      
+      <!-- Module -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.module
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.module ?? labels.notApplicable }}
+      </div>
+
+      <!-- Description -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.description
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.description ?? labels.notApplicable }}
+      </div>
+
+      <!-- Created At -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.createdAt
+        }}"
+        class="text-start table-row-item"
+      >
+        {{
+          (row?.createdAt | date : dateFormat.dateOnly) ?? labels.notApplicable
+        }}
+      </div>
+      } } @else {
+      <!-- Template when list is null -->
+      <cps-no-data
+        moduleName="Service List"
+        class="row-span-3 col-span-full"
+      ></cps-no-data>
+      }
+    </div>
+    <app-paginator
+      aria-label="Service List paginator"
+      class="paginator"
+      [records]="paginate.totalRecords"
+      [entries]="paginate.totalEntries"
+      [pageIndex]="paginate.pageIndex"
+      [pageSize]="paginate.pageSize"
+      (page)="handlePageEvent($event)"
+    >
+    </app-paginator>
+  </div>
+</form>
+}

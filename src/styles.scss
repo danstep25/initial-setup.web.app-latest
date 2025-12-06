@@ -1,0 +1,404 @@
+
+@use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@layer components {
+  .main-container {
+    @apply flex flex-auto overflow-hidden;
+  }
+
+  .view-list {
+    @apply flex flex-auto flex-col overflow-hidden overflow-x-auto bg-white sm:mb-15 sm:overflow-y-auto;
+
+    .view-list-grid {
+      @apply grid;
+
+      .view-list-grid-header {
+        @apply text-gray-200 sticky top-0 z-10 grid gap-4 bg-gray-50 px-9 py-4 text-md font-semibold shadow;
+      }
+
+      .view-list-grid-body {
+        @apply grid items-center gap-4 border-b border-gray-300 px-9 py-3;
+      }
+    }
+  }
+
+  .table-wrapper {
+    @apply max-w-full rounded-lg overflow-hidden shadow-lg;
+    background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+    border: 1px solid rgba(236, 72, 153, 0.15);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(236, 72, 153, 0.05);
+
+    .table-header {
+      @apply text-md font-bold grid;
+
+      .table-header-item {
+        @apply border-b-2 px-6 py-4 sticky top-0 z-10;
+        background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fdf2f8 100%);
+        border-bottom-color: rgba(236, 72, 153, 0.3);
+        color: #831843;
+        box-shadow: 0 2px 4px -1px rgba(236, 72, 153, 0.1);
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #fce7f3 100%);
+          border-bottom-color: rgba(236, 72, 153, 0.5);
+          color: #9f1239;
+        }
+      }
+
+      .table-row-item {
+        @apply px-6 py-4 text-gray-800 text-wrap font-normal;
+        background: #ffffff;
+        border-bottom: 1px solid rgba(236, 72, 153, 0.08);
+        transition: all 0.15s ease;
+        
+        &:nth-child(even) {
+          background: #fefefe;
+        }
+        
+        &:hover {
+          background: linear-gradient(135deg, #fef7ff 0%, #fdf2f8 50%, #fef7ff 100%);
+          border-bottom-color: rgba(236, 72, 153, 0.2);
+          box-shadow: 0 1px 3px rgba(236, 72, 153, 0.1);
+          transform: translateX(1px);
+        }
+      }
+
+      .table-row-sub-item {
+        @apply px-6 py-4 text-wrap font-normal border-b;
+        background: #f9fafb;
+        border-bottom-color: rgba(236, 72, 153, 0.08);
+        color: #6b7280;
+      }
+    }
+    
+    .paginator {
+      @apply z-10 px-5 border-t;
+      @apply sm:absolute sm:inset-x-0 sm:bottom-0;
+      background: linear-gradient(to bottom, #fdf2f8 0%, #fce7f3 100%);
+      border-top-color: rgba(236, 72, 153, 0.2);
+      box-shadow: 0 -2px 4px -1px rgba(236, 72, 153, 0.05);
+    }
+  }
+
+  // Style buttons with complimentary pink theme
+  .bg-rose-300,
+  mat-flat-button.bg-rose-300,
+  button.bg-rose-300,
+  a.bg-rose-300 {
+    @apply transition-all duration-200;
+    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%) !important;
+    color: white !important;
+    border: 1px solid rgba(236, 72, 153, 0.2) !important;
+    box-shadow: 0 2px 4px rgba(236, 72, 153, 0.2) !important;
+    
+    &:hover {
+      background: linear-gradient(135deg, #fb9fc7 0%, #f472b6 100%) !important;
+      box-shadow: 0 4px 8px rgba(236, 72, 153, 0.3) !important;
+      transform: translateY(-1px);
+      border-color: rgba(236, 72, 153, 0.4) !important;
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(236, 72, 153, 0.2) !important;
+    }
+    
+    mat-icon {
+      color: white !important;
+    }
+  }
+
+  // Style expansion panel with complimentary theme
+  mat-expansion-panel {
+    @apply rounded-lg overflow-hidden mb-4;
+    background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%) !important;
+    border: 1px solid rgba(236, 72, 153, 0.15) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    
+    mat-expansion-panel-header {
+      background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%) !important;
+      color: #831843 !important;
+      padding: 12px 16px !important;
+      
+      &:hover {
+        background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important;
+      }
+      
+      mat-panel-title {
+        @apply flex items-center gap-2;
+        
+        mat-icon {
+          color: #ec4899 !important;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+    
+    .mat-expansion-panel-body {
+      background: #ffffff !important;
+      color: #374151 !important;
+      padding: 20px !important;
+    }
+    
+    // Style the grid layout inside expansion panel
+    .grid {
+      @apply gap-4;
+      
+      // Style form field container
+      .table-header-item {
+        @apply w-full;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        
+        mat-form-field {
+          @apply w-full;
+          margin-bottom: 0 !important;
+          
+          .mat-mdc-form-field-subscript-wrapper {
+            display: none !important;
+          }
+          
+          .mat-mdc-form-field-infix {
+            min-height: 40px !important;
+            padding: 8px 0 !important;
+          }
+          
+          .mat-mdc-text-field-wrapper {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(236, 72, 153, 0.2) !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+            padding: 0 12px !important;
+            height: 40px !important;
+            
+            &:hover {
+              border-color: rgba(236, 72, 153, 0.4) !important;
+              box-shadow: 0 1px 3px rgba(236, 72, 153, 0.1) !important;
+            }
+          }
+          
+          &.mat-focused .mat-mdc-text-field-wrapper {
+            border-color: rgba(236, 72, 153, 0.6) !important;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1) !important;
+          }
+          
+          .mat-mdc-form-field-focus-overlay {
+            background-color: transparent !important;
+          }
+          
+          mat-icon[matPrefix] {
+            color: #ec4899 !important;
+            margin-right: 8px;
+            opacity: 0.8;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+          
+          input {
+            color: #374151 !important;
+            font-size: 14px;
+            padding: 0 !important;
+            height: 24px !important;
+            line-height: 24px !important;
+            
+            &::placeholder {
+              color: #9ca3af !important;
+              opacity: 0.7;
+            }
+          }
+          
+          .mat-mdc-form-field-label {
+            color: rgba(236, 72, 153, 0.7) !important;
+          }
+        }
+      }
+      
+      // Style button container
+      .flex.flex-row.gap-3 {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 8px;
+        
+        button {
+          @apply min-w-[120px];
+          height: 42px !important;
+          border-radius: 8px !important;
+          font-weight: 500;
+          font-size: 14px;
+          text-transform: none;
+          letter-spacing: 0.3px;
+          padding: 0 16px !important;
+          transition: all 0.2s ease;
+          
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            margin-right: 4px;
+          }
+          
+          span {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+    
+    // Additional styles for better layout
+    [class*="-list-grid"] {
+      @apply gap-4;
+      
+      @media (min-width: 640px) {
+        grid-template-columns: 1fr auto;
+        align-items: start;
+      }
+      
+      @media (max-width: 639px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  // Style form fields with complimentary theme (general styles)
+  mat-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      border: 1px solid rgba(236, 72, 153, 0.2) !important;
+      border-radius: 4px !important;
+      transition: all 0.2s ease !important;
+      
+      &:hover {
+        border-color: rgba(236, 72, 153, 0.3) !important;
+      }
+    }
+    
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border-color: rgba(236, 72, 153, 0.5) !important;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1) !important;
+    }
+    
+    .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(236, 72, 153, 0.05) !important;
+    }
+    
+    input, textarea {
+      color: #374151 !important;
+      
+      &::placeholder {
+        color: #9ca3af !important;
+        opacity: 0.7;
+      }
+    }
+    
+    .mat-mdc-form-field-label {
+      color: rgba(236, 72, 153, 0.7) !important;
+    }
+    
+    mat-icon[matPrefix] {
+      color: #ec4899 !important;
+      opacity: 0.8;
+    }
+  }
+
+  // Style action icons in tables with complimentary theme
+  .table-header {
+    button mat-icon,
+    a mat-icon {
+      @apply transition-all duration-200;
+      color: #ec4899 !important;
+      
+      &:hover {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 4px rgba(236, 72, 153, 0.4));
+      }
+      
+      &.text-black {
+        color: #ec4899 !important;
+      }
+    }
+    
+    // Specific hover colors for different action types
+    button:hover mat-icon[class*="hover:text-yellow-500"],
+    a:hover mat-icon[class*="hover:text-yellow-500"] {
+      color: #f59e0b !important;
+      filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4));
+    }
+    
+    button:hover mat-icon[class*="hover:text-green-300"],
+    a:hover mat-icon[class*="hover:text-green-300"] {
+      color: #10b981 !important;
+      filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
+    }
+    
+    button:hover mat-icon[class*="hover:text-red-500"],
+    a:hover mat-icon[class*="hover:text-red-500"] {
+      color: #ef4444 !important;
+      filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.4));
+    }
+    
+    // Style action buttons container
+    > div {
+      background: transparent !important;
+      
+      button, a {
+        @apply transition-all duration-200;
+        border-radius: 6px;
+        padding: 4px;
+        
+        &:hover {
+          background: rgba(236, 72, 153, 0.1) !important;
+        }
+      }
+    }
+  }
+}
+
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  @extend .material-icons;
+}
+
+.material-icons-round {
+  font-family: 'Material Icons Round';
+  @extend .material-icons;
+}
+
+.material-icons-sharp {
+  font-family: 'Material Icons Sharp';
+  @extend .material-icons;
+}
+
+.material-icons-two-tone {
+  font-family: 'Material Icons Two Tone';
+  @extend .material-icons;
+}
+
+.my-class {
+  background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb') !important;
+  background-size: cover;
+  background-position: center;
+}

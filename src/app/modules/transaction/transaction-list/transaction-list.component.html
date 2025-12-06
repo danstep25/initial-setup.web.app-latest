@@ -1,0 +1,239 @@
+<!-- Transaction List -->
+@if (transactionList$ | async; as transactionList) {
+<form [formGroup]="transactionFormGroup">
+  <div
+    attr.data-cy="{{ labels.title }}-list-page-container"
+    class="table-wrapper"
+  >
+    <div
+      style="display: flex; justify-content: flex-end"
+      class="absolute top-12 right-2 gap-2"
+    >
+    <a
+        mat-flat-button
+        class="flex items-center gap-2 pl-4 pr-5 bg-rose-300"
+        (click)="generate()"
+      >
+        <span class="hidden sm:block">{{ labels.generate }}</span>
+      </a>
+    </div>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>filter_alt</mat-icon>
+          <mat-icon>sort</mat-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid gap-2 transaction-list-grid">
+        <div
+          attr.data-cy="{{ labels.title }}-list-table-header-{{
+            labels.headers.search
+          }}"
+          class="table-header-item"
+        >
+          <mat-form-field class="flex flex-row w-full" appearance="outline">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              class="ms-2"
+              matInput
+              [placeholder]="labels.placeholder.search"
+              formControlName="searchValue"
+            />
+          </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-3">
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="searchFilter(transactionFormGroup)"
+          >
+            <mat-icon class="icon-size-5">search</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.search }}</span>
+          </button>
+          <button
+            mat-raised-button
+            class="flex items-center justify-center gap-2 bg-rose-300"
+            (click)="resetFilter()"
+          >
+            <mat-icon class="icon-size-5">rotate_left</mat-icon>
+            <span class="hidden sm:block">{{ labels.placeholder.reset }}</span>
+          </button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <!-- Header -->
+    <div
+      attr.data-cy="{{ labels.title }}-list-header"
+      class="transaction-list-grid table-header"
+    >
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.fullName
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.fullName | titlecase }}
+      </div>
+      
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.address
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.address | titlecase }}
+      </div>
+      
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.contactNo
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.contactNo | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.balance
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.balance | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.createdAt
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.createdAt | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.updatedAt
+        }}"
+        class="table-header-item"
+      >
+        {{ labels.headers.updatedAt | titlecase }}
+      </div>
+
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-header-{{
+          labels.headers.action
+        }}"
+        class="table-header-item"
+      >
+        <div class="min-w-32">{{ labels.headers.action }}</div>
+      </div>
+      <!-- Rows -->
+      @if (transactionList.data.length > 0) { @for (row of
+      transactionList.data; track $index) {
+      <!-- Full Name -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.fullName
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.fullName ?? labels.notApplicable }}
+      </div>
+      
+      <!-- Address -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.address
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.address ?? labels.notApplicable }}
+      </div>
+      
+      <!-- Contact No -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.contactNo
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.contactNo ?? labels.notApplicable }}
+      </div>
+
+      <!-- Balance -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.balance
+        }}"
+        class="text-start table-row-item"
+      >
+        {{ row?.balance ?? labels.notApplicable }}
+      </div>
+
+      <!-- Created At -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.createdAt
+        }}"
+        class="text-start table-row-item"
+      >
+        {{
+          (row?.createdAt | date : dateFormat.dateOnly) ?? labels.notApplicable
+        }}
+      </div>
+
+      <!-- Updated At -->
+      <div
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.updatedAt
+        }}"
+        class="text-start table-row-item"
+      >
+        {{
+          (row?.updatedAt | date : dateFormat.dateOnly) ?? labels.notApplicable
+        }}
+      </div>
+
+      <!-- Actions -->
+      <div
+        class="bg-white"
+        attr.data-cy="{{ labels.title }}-list-table-row-{{ $index }}-{{
+          labels.headers.action
+        }}"
+      >
+        <div class="flex gap-2 my-3 ms-5">
+          <button
+            *ngIf="row?.statusId != 3"
+            [matTooltip]="labels.actions.pay"
+            matTooltipPosition="above"
+          >
+            <mat-icon
+              class="text-black hover:text-yellow-500"
+              (click)="openDialog(row)"
+              >currency_exchange</mat-icon
+            >
+          </button>
+        </div>
+      </div>
+      } } @else {
+      <!-- Template when list is null -->
+      <cps-no-data
+        moduleName="Service List"
+        class="row-span-3 col-span-full"
+      ></cps-no-data>
+      }
+    </div>
+    <app-paginator
+      aria-label="Service List paginator"
+      class="paginator"
+      [records]="paginate.totalRecords"
+      [entries]="paginate.totalEntries"
+      [pageIndex]="paginate.pageIndex"
+      [pageSize]="paginate.pageSize"
+      (page)="handlePageEvent($event)"
+    >
+    </app-paginator>
+  </div>
+</form>
+}

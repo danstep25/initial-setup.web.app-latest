@@ -1,0 +1,3 @@
+.reservation-list-grid {
+    grid-template-columns: repeat(9, minmax(max-content, 1fr)) 200px;
+}

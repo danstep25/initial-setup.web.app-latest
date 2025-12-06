@@ -1,0 +1,254 @@
+<!-- Main -->
+<div
+  aria-label="Supplier Form Page Container"
+  class="flex flex-col mt-[20px] flex-auto min-w-0 bg-card dark:bg-transparent sm:absolute sm:inset-0 sm:overflow-hidden"
+>
+  <!-- Header -->
+  <div
+    attr.aria-label="{{ labels.title }} Page Header"
+    class="relative flex flex-col px-6 pt-1 bg-gray-600 border-b flex-0 sm:flex-row sm:items-center sm:justify-between md:px-8"
+  >
+    <div class="flex flex-col w-full gap-1">
+      <div
+        attr.aria-label="{{ labels.title }} Page Breadcrumb Container"
+        class="flex items-center font-medium text-secondary"
+      ></div>
+      <div
+        class="relative flex flex-col flex-wrap gap-2 py-4 flex-0 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div
+          attr.aria-label="{{ labels.title }} Page Title"
+          class="text-4xl font-extrabold tracking-tight"
+        >
+          <span class="text-white"
+            >{{
+              this.defaultFormType == this.actionType.add
+                ? actionType.add
+                : actionType.edit
+            }}
+            {{ labels.title }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container bg-slate-100 sm:p-8">
+    <div
+      class="relative w-full overflow-auto bg-white rounded-lg shadow-lg md:pb-15"
+    >
+      <form [formGroup]="formGroup" class="p-6 h-full overflow-y-auto">
+        <!-- Package Information Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+            Package Information
+          </h3>
+          <div class="grid w-full gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.name }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'name'"
+                  [placeholder]="labels.headers.name"
+                />
+                @if(hasError('name')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.description }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'description'"
+                  [placeholder]="labels.headers.description"
+                />
+                @if(hasError('description')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">
+                {{ labels.headers.pax }}
+              </label>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  [formControlName]="'pax'"
+                  [placeholder]="labels.headers.pax"
+                />
+                @if(hasError('pax')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-2">
+                <mat-checkbox formControlName="isFixed">
+                  {{ labels.headers.price }}
+                </mat-checkbox>
+              </div>
+              <mat-form-field class="w-full" appearance="outline">
+                <input
+                  matInput
+                  (keypress)="onlyAllowDecimal($event)"
+                  (paste)="onPasteDecimal($event)"
+                  [formControlName]="'price'"
+                  [placeholder]="labels.headers.price"
+                />
+                @if(hasError('price')){
+                <mat-error>{{ "required." }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dishes Section -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Dishes
+            </h3>
+            <button
+              mat-flat-button
+              [color]="'primary'"
+              type="button"
+              class="flex items-center gap-2"
+              (click)="addDish()"
+            >
+              <mat-icon>add</mat-icon>
+              <span>Add Dish</span>
+            </button>
+          </div>
+
+          <div
+            formArrayName="dishes"
+            class="space-y-4"
+          >
+            @if(Dishes.controls.length === 0) {
+              <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <mat-icon class="text-4xl mb-2 text-gray-400">restaurant</mat-icon>
+                <p>No dishes added yet. Click "Add Dish" to get started.</p>
+              </div>
+            }
+            
+            <div
+              *ngFor="let dish of Dishes.controls; let i = index"
+              [formGroupName]="i"
+              class="grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+            >
+              <div class="sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.dishes }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <mat-select
+                    formControlName="dishId"
+                    (selectionChange)="getPrice($event.value, i)"
+                  >
+                    @for(option of (dishList$ | async)?.data; track option){
+                    <mat-option [value]="option.id">{{
+                      option.value
+                    }}</mat-option>
+                    }
+                  </mat-select>
+                  @if(hasError('dishId')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.price }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <input
+                    matInput
+                    [formControlName]="'price'"
+                    [placeholder]="labels.headers.price"
+                  />
+                  @if(hasError('price')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-4">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                  {{ labels.headers.servingSize }}
+                </label>
+                <mat-form-field class="w-full" appearance="outline">
+                  <mat-select formControlName="servingSize">
+                    @for(option of servingSize; track option){
+                    <mat-option [value]="option">{{
+                      option
+                    }}</mat-option>
+                    }
+                    </mat-select>
+                  <!-- <input
+                    matInput
+                    [formControlName]="'servingSize'"
+                    [placeholder]="labels.headers.servingSize"
+                  /> -->
+                  @if(hasError('servingSize')){
+                  <mat-error>{{ "required." }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="sm:col-span-1 flex mt-[23px]">
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="text-red-500 hover:bg-red-50"
+                  (click)="removeDish(i)"
+                  [attr.aria-label]="'Remove dish'"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="mt-8 bg-white border-t-2 border-gray-200 shadow-lg -mx-6 -mb-6">
+          <div class="flex flex-col sm:flex-row items-center justify-end gap-4 px-6 py-4">
+            <button
+              type="submit"
+              mat-flat-button
+              [color]="'primary'"
+              class="px-8 py-2"
+              (click)="
+                submit(
+                  module.foodPackage,
+                  defaultFormType === actionType.add
+                    ? requestMethod.post
+                    : requestMethod.put
+                )
+              "
+            >
+              <mat-icon class="mr-2">{{ defaultFormType === actionType.add ? 'save' : 'update' }}</mat-icon>
+              {{
+                defaultFormType === actionType.add ? labels.save : labels.update
+              }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

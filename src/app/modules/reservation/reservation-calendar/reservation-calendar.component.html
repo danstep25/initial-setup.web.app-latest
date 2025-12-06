@@ -1,0 +1,53 @@
+<!-- Main Reservation Container -->
+<div
+  aria-label="Reservation Page Container"
+  class="flex flex-col flex-auto min-w-0 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 sm:absolute sm:inset-0 sm:overflow-hidden"
+>
+  <!-- Enhanced Header Section -->
+  <div
+    attr.aria-label="{{ labels.title }} Page Header"
+    class="relative flex flex-col px-6 pt-6 pb-4 flex-0 sm:flex-row sm:items-center sm:justify-between md:px-8 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 shadow-lg"
+  >
+    <div class="flex flex-col w-full gap-2">
+      <div
+        attr.aria-label="{{ labels.title }} Page Breadcrumb Container"
+        class="flex items-center font-medium normal-case text-rose-100 text-sm"
+      >
+        <mat-icon class="mr-1 text-base">calendar_today</mat-icon>
+        <span>Reservation Management</span>
+      </div>
+      <div
+        class="relative flex flex-col flex-wrap gap-3 py-2 flex-0 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div
+          attr.aria-label="{{ labels.title }} Page Title"
+          class="flex items-center gap-3"
+        >
+          <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm shadow-md">
+            <mat-icon class="text-white text-3xl">event</mat-icon>
+          </div>
+          <div class="flex flex-col">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
+              {{ labels.title }}
+            </h1>
+            <p class="text-rose-100 text-sm mt-1 font-medium">
+              View and manage your reservation calendar
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24 blur-3xl"></div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-container flex-1">
+    <div class="flex flex-auto overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-4 sm:p-6">
+      <div class="w-full h-full rounded-2xl shadow-xl bg-white dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700">
+        <app-reservation-list-calendar class="view-list h-full"></app-reservation-list-calendar>
+      </div>
+    </div>
+  </div>
+</div>

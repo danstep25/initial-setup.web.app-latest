@@ -1,0 +1,32 @@
+<div class="confirmation-dialog">
+  <h2 mat-dialog-title class="text-2xl font-bold text-gray-800 pb-2 border-b border-gray-200">
+    {{ data.title }}
+  </h2>
+
+  <mat-dialog-content class="min-w-[400px]">
+    <div class="flex items-start gap-4 py-6">
+      <mat-icon class="text-red-500 text-5xl flex-shrink-0">warning</mat-icon>
+      <p class="text-gray-700 text-base leading-relaxed">{{ data.message }}</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="gap-3 px-6 pb-4 pt-4 border-t border-gray-200 bg-gray-50">
+    <button
+      mat-button
+      class="px-6"
+      (click)="onCancel()"
+    >
+      {{ data.cancelText }}
+    </button>
+    <button
+      mat-raised-button
+      color="warn"
+      class="px-6"
+      (click)="onConfirm()"
+    >
+      <mat-icon class="mr-2">delete</mat-icon>
+      {{ data.confirmText }}
+    </button>
+  </mat-dialog-actions>
+</div>
+

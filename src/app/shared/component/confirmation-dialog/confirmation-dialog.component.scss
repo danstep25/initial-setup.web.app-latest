@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.confirmation-dialog {
+  mat-dialog-title {
+    margin: 0;
+    padding: 0 0 16px 0;
+  }
+
+  mat-dialog-content {
+    margin: 0;
+    padding: 0 24px;
+  }
+
+  mat-dialog-actions {
+    margin: 0;
+    padding: 16px 24px;
+  }
+}
+
