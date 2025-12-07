@@ -20,6 +20,7 @@ import { BaseModule } from '../../../shared/modules/base.module';
 import { PaginationModule } from '../../../shared/modules/pagination.module';
 import { TransactionFormComponent } from '../../transaction/transaction-form/transaction-form.component';
 import { ReservationFeeFormComponent } from '../reservation-fee-form/reservation-fee-form.component';
+import { ReservationViewComponent } from '../reservation-view/reservation-view.component';
 import { MatDialog } from '@angular/material/dialog';
 import { STATUS } from '../../../shared/constants/module.constant';
 import { TOAST_TYPE } from '../../../shared/constants/icon.constant';
@@ -67,7 +68,8 @@ export class ReservationListComponent
       delete: 'Delete',
       pay: 'Pay',
       refund: 'Refund',
-      generateReport: 'Generate Report'
+      generateReport: 'Generate Report',
+      view: 'View'
     },
     new: 'New',
     viewCalendar: 'View Calendar',
@@ -196,6 +198,34 @@ export class ReservationListComponent
     });
   }
 
+  openViewDialog(row: any): void {
+    const dialogRef = this._dialog.open(ReservationViewComponent, {
+      data: row,
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh'
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      // Optional: refresh data if needed
+    });
+  }
+
+  isRefundAvailable(row: any): boolean {
+    // Check if refund is available (date must be before dateFrom, not same day or past)
+    if (!row?.dateFrom) {
+      return false;
+    }
+
+    const dateFrom = new Date(row.dateFrom);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dateFrom.setHours(0, 0, 0, 0);
+
+    // Refund is only available if today is before dateFrom (not same day or past)
+    return today < dateFrom;
+  }
+
   openRefundDialog(data): void {
     // Validate refund eligibility based on dateFrom
     if (!data?.dateFrom) {
@@ -207,6 +237,12 @@ export class ReservationListComponent
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
     dateFrom.setHours(0, 0, 0, 0);
+
+    // Validate: Refund is only available if today is before dateFrom (not same day or past)
+    if (today >= dateFrom) {
+      this.toastService.show(TOAST_TYPE.error, 'Refund is not available. The event date has passed or is today.');
+      return;
+    }
 
     // Calculate days difference
     const daysDifference = Math.floor((dateFrom.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -316,14 +352,14 @@ export class ReservationListComponent
       .pipe(take(1))
       .subscribe({
         next: (result: any) => {
-          const reservation = result.reservation;
           const foodPackages = result.foodPackages?.data || result.foodPackages;
           const services = result.services?.data || result.services;
           const events = result.events?.data || result.events;
           const venues = result.venues?.data || result.venues;
           
+          // Use the full reservation data from API response
           const reservationData = row;
-          const filename = `reservation-${row.reservationId}-${row.fullName || 'detail'}.pdf`.replace(/\s+/g, '-');
+          const filename = `reservation-${reservationData.reservationId || row.reservationId}-${reservationData.fullName || row.fullName || 'detail'}.pdf`.replace(/\s+/g, '-');
           
           // Create lookup maps with names and prices
           const foodPackageLookup = new Map<number, { name: string; price?: number }>();
@@ -362,7 +398,6 @@ export class ReservationListComponent
               });
             });
           }
-          console.warn(reservationData);
           this._exportService.exportIndividualReservationToPdf(
             reservationData, 
             filename,

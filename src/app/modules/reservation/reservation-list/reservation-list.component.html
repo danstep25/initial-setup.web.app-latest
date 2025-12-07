@@ -309,7 +309,15 @@
         }}"
       >
         <div class="flex gap-2 my-3 ms-5">
+          <button [matTooltip]="labels.actions.view" matTooltipPosition="above">
+            <mat-icon
+              class="text-black hover:text-blue-500"
+              (click)="openViewDialog(row)"
+              >visibility</mat-icon
+            >
+          </button>
           <a
+            *ngIf="row?.statusId != 3 && row?.status != reservationStatus.cancelled"
             [matTooltip]="labels.actions.edit"
             matTooltipPosition="above"
             [routerLink]="[row.reservationId, 'edit']"
@@ -339,7 +347,7 @@
             >
           </button>
 
-          <button *ngIf="row?.status == reservationStatus.active && row?.statusId != 3" [matTooltip]="labels.actions.refund" matTooltipPosition="above">
+          <button *ngIf="row?.status == reservationStatus.active && isRefundAvailable(row)" [matTooltip]="labels.actions.refund" matTooltipPosition="above">
             <mat-icon
               class="text-black hover:text-blue-500"
               (click)="openRefundDialog(row)"

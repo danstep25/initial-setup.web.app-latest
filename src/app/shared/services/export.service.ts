@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
-import { MODULE } from '../constants/module.constant';
+import { MODULE, STATUS } from '../constants/module.constant';
 
 @Injectable({
   providedIn: 'root',
@@ -412,24 +412,45 @@ export class ExportService {
       addRow('Discount Amount/Percentage', data.discount);
     }
     addRow('Total Price', formatCurrency(data.totalPrice || 0));
-    
+  
     // Calculate total paid and balance (matching transaction form logic)
     const totalPrice = Number(data.totalPrice) || 0;
     // If balance is 0, it means unpaid, so balance should be totalPrice
     // Otherwise, use the actual balance value
-    const balance = data.balance == 0 ? totalPrice : (Number(data.balance) !== undefined ? Number(data.balance) : totalPrice);
+    const balance = data.balance == '0' ? totalPrice : (Number(data.balance) !== undefined ? Number(data.balance) : totalPrice);
     const totalPaid = totalPrice - balance;
     
-    addRow('Total Paid', formatCurrency(totalPaid));
-    addRow('Balance', formatCurrency(balance));
+    addRow('Total Paid', formatCurrency(isNaN(totalPaid) ? 0 : totalPaid));
+    addRow('Balance', formatCurrency(isNaN(balance) ? 0 : balance));
     yPosition += 5;
+
+    // Refund Information Section
+    const refundInfo = this.getRefundInfo(data);
+    if (refundInfo.hasRefund || refundInfo.refundAmount > 0) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Refund Information', 20, yPosition);
+      yPosition += 10;
+
+      addRow('Reservation Fee', formatCurrency(refundInfo.reservationFee));
+      if (refundInfo.refundAmount > 0) {
+        addRow('Refund Amount', formatCurrency(refundInfo.refundAmount));
+        if (refundInfo.refundPercentage > 0) {
+          addRow('Refund Percentage', `${refundInfo.refundPercentage.toFixed(1)}% of Reservation Fee`);
+        }
+      }
+      if (refundInfo.refundMessage) {
+        addRow('Refund Status', refundInfo.refundMessage);
+      }
+      yPosition += 5;
+    }
 
     // Status Information Section
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('Status Information', 20, yPosition);
     yPosition += 10;
-
+    console.warn('statusId', data);
     addRow('Payment Status', this.getPaymentStatus(data.statusId));
     addRow('Reservation Status', data.status || 'N/A');
     yPosition += 5;
@@ -473,6 +494,7 @@ export class ExportService {
 
   private getPaymentStatus(statusId: any): string {
     const status = String(statusId);
+    console.warn('status', status);
     if (status === '0') {
       return 'Unpaid';
     } else if (status === '1' || status === '2') {
@@ -481,5 +503,87 @@ export class ExportService {
       return 'Fully Paid';
     }
     return 'Unknown';
+  }
+
+  private getRefundInfo(data: any): { hasRefund: boolean; reservationFee: number; refundAmount: number; refundPercentage: number; refundMessage: string } {
+    // Check if there's actual refund data
+    
+    const dateFrom = new Date(data.dateFrom);
+    const validityDate = new Date(data.dateFrom);
+    validityDate.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    dateFrom.setHours(0, 0, 0, 0);
+
+    if (data?.updatedAt !== null && data?.status === STATUS.cancelled) {
+      const totalPrice = Number(data?.totalPrice) || 0;
+      const reservationFee = totalPrice * 0.1;
+      var refundAmount = Number(data.refundAmount) || 0;
+      const refundPercentage = reservationFee > 0 ? (refundAmount / reservationFee) * 100 : 0;
+      const daysDifference = Math.floor((dateFrom.getTime() - validityDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (daysDifference < 7) {
+        refundAmount = reservationFee * 0.2;
+      }
+
+      return {
+        hasRefund: true,
+        reservationFee,
+        refundAmount,
+        refundPercentage,
+        refundMessage: 'Refund has been processed'
+      };
+    }
+
+    // Calculate potential refund eligibility
+    if (!data?.dateFrom) {
+      return {
+        hasRefund: false,
+        reservationFee: 0,
+        refundAmount: 0,
+        refundPercentage: 0,
+        refundMessage: ''
+      };
+    }
+
+    // Calculate days difference (how many days until the event)
+
+    const today = new Date();
+    const daysDifference = Math.floor((dateFrom.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const totalPrice = Number(data?.totalPrice) || 0;
+    const reservationFee = totalPrice * 0.1;
+
+    if (daysDifference < 0) {
+      return {
+        hasRefund: false,
+        reservationFee,
+        refundAmount: 0,
+        refundPercentage: 0,
+        refundMessage: 'No refund available for past reservations'
+      };
+    } else if (daysDifference < 7) {
+      const refundAmount = reservationFee * 0.2;
+      return {
+        hasRefund: true,
+        reservationFee,
+        refundAmount,
+        refundPercentage: 20,
+        refundMessage: '20% refund available (less than 1 week before event)'
+      };
+    } else if (daysDifference >= 7 && daysDifference <= 14) {
+      return {
+        hasRefund: true,
+        reservationFee,
+        refundAmount: reservationFee,
+        refundPercentage: 100,
+        refundMessage: 'Full refund available (1-2 weeks before event)'
+      };
+    } else {
+      return {
+        hasRefund: true,
+        reservationFee,
+        refundAmount: reservationFee,
+        refundPercentage: 100,
+        refundMessage: 'Full refund available (more than 2 weeks before event)'
+      };
+    }
   }
 }
